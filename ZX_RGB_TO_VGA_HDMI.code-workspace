@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "ZX_RGB_TO_VGA_HDMI"
+		},
+		{
+			"name": "ZX_RGB_TO_VGA",
+			"path": "ZX_RGB_TO_VGA"
+		}
+	],
+	"settings": {}
+}
