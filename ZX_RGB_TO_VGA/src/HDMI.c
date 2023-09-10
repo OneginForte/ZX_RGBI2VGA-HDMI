@@ -213,7 +213,7 @@ void startHDMI()
     //screen_buf=scr_buf;
     vreg_set_voltage(VREG_VOLTAGE_1_25);
     sleep_ms(10);
-    set_sys_clock_khz(252000, false);
+    set_sys_clock_khz(280000, false);
     sleep_ms(10);
     //инициализация констант
     uint16_t b0=0b1101010100;

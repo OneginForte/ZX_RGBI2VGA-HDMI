@@ -48,7 +48,7 @@ void setup()
 
   vreg_set_voltage(VREG_VOLTAGE_1_25);
   sleep_ms(100);
-  set_sys_clock_khz(252000, true);
+  set_sys_clock_khz(280000, true);
   sleep_ms(10);
   Serial.begin(115200);
 
@@ -172,6 +172,8 @@ void setup()
   if (capture_setings.video_out_mode == VGA)
   {
     startVGA();
+    capture_setings.is_wide_mode = 0;
+    setVGAWideMode(capture_setings.is_wide_mode);
   } // setVGAWideMode(capture_setings.is_wide_mode);
   if (capture_setings.video_out_mode == HDMI)
   {

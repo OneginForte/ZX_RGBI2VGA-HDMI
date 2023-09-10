@@ -141,7 +141,7 @@ int dma_chan;
 
 #define SIZE_LINE_CAPTURE (1024)
 //количество буферов ДМА можно увеличить, если будет подёргивание
-#define N_DMA_BUF_CAPTURE 8
+#define N_DMA_BUF_CAPTURE 10
 #define SIZE_DMA_BUF_CAPTURE (SIZE_LINE_CAPTURE*N_DMA_BUF_CAPTURE)
 
 // static uint8_t DMA_BUF_CAP[2][SIZE_DMA_BUF_CAPTURE];
