@@ -12,7 +12,7 @@
 #include "stdlib.h"
 #include "stdlib.h"
 #include "v_buf.h"
-
+#include "graphics.h"
 
 uint16_t pio_program_VGA_instructions[] = {
                        
@@ -120,8 +120,6 @@ void __not_in_flash_func(dma_handler_VGA)() {
     }
 
      
-  
-    
     uint8_t* vbuf_OUT=(uint8_t*)(*ptr_vbuf_OUT);
   
     if (is_wide) 
@@ -153,10 +151,6 @@ void __not_in_flash_func(dma_handler_VGA)() {
 }
 
 void setVGAWideMode(bool w_mode){is_wide=w_mode;};
-
-
-
-
 
 
 void startVGA()
@@ -215,10 +209,6 @@ void startVGA()
     lines_pattern[3]=(uint32_t*)base_ptr;
     memcpy(base_ptr,lines_pattern[0],line_size);
 
-   
-
-
-
     //инициализация PIO
     //загрузка программы в один из PIO
     uint offset = pio_add_program(PIO_VGA, &pio_program_VGA);
@@ -240,12 +230,6 @@ void startVGA()
     pio_sm_init(PIO_VGA, sm, offset, &c);
 
     pio_sm_set_enabled(PIO_VGA, sm, true);
-
-
-   
-   
-
-
 
     // set_sys_clock_khz(256000, true);
     // sleep_ms(10); 

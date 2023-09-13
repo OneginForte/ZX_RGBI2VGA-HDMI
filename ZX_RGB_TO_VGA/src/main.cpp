@@ -6,18 +6,19 @@ extern "C"
 #include "pico/stdlib.h"
 #include "hardware/vreg.h"
 #include "hardware/flash.h"
-
 #include "rgb_capture.h"
 #include "stdio.h"
 #include "v_buf.h"
 #include "VGA.h"
 #include "HDMI.h"
+#include "graphics.h"
 }
 
 #define printf Serial.printf
 
 cap_set_t capture_setings;
 
+/// @brief 
 static void draw_hello_image()
 {
   uint8_t *vbuf = (uint8_t *)v_buf_get_out();
@@ -36,6 +37,19 @@ static void draw_hello_image()
       // *vbuf1++=c;
       // *vbuf2++=c;
     }
+
+/*  uint8_t *vbuf2 = (uint8_t *)v_buf_get_out();
+  uint8_t* ptr = bitmap;
+
+  for (int y = 0; y < (V_BUF_H * V_BUF_W); y++)
+    {
+    if (*ptr != 0){
+      *vbuf2 = *ptr;
+        }
+      *vbuf2++;
+      *ptr++;
+    }
+*/
 }
 
 // int data_for_save[FLASH_PAGE_SIZE/sizeof(int)];
@@ -167,6 +181,10 @@ void setup()
     disable_3x_bufmode();
 
   digitalWrite(LED_BUILTIN, LOW); // сбрасываем индикаторный светодиод
+  
+  //init_m();
+  //print_string(60, 8, (char *)"ZX RGB to VGA converter by Alex EKB (C) 2023", col_black, col_white);
+
   draw_hello_image();
 
   if (capture_setings.video_out_mode == VGA)

@@ -119,9 +119,6 @@ void __not_in_flash_func(dma_handler_VGA)() {
         break;
     }
 
-     
-  
-    
     uint8_t* vbuf_OUT=(uint8_t*)(*ptr_vbuf_OUT);
   
     if (is_wide) 
@@ -153,11 +150,6 @@ void __not_in_flash_func(dma_handler_VGA)() {
 }
 
 void setVGAWideMode(bool w_mode){is_wide=w_mode;};
-
-
-
-
-
 
 void startVGA()
 {
