@@ -34,13 +34,11 @@ void* __not_in_flash_func(v_buf_get_out)()
         }
 
         return v_bufs[inxVbufOut];
-
     };
+    
 void* __not_in_flash_func(v_buf_get_in)()
     {
         if (!is_3x_bufmode) return v_bufs[0];
-
-        
 
         if (inxVbufIn>=0)
         {
@@ -62,10 +60,7 @@ void* __not_in_flash_func(v_buf_get_in)()
             return v_bufs[inxVbufIn];
         }
 
-
         return NULL;
-
-
     };
 
 void enable_3x_bufmode(){is_3x_bufmode=true;};

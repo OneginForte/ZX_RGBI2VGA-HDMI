@@ -9,7 +9,7 @@
 #include <string.h> 
 #include "g_config.h"
 #include "hardware/pio.h"
-#include "stdlib.h"
+#include "pico/stdlib.h"
 #include "stdlib.h"
 #include "v_buf.h"
 #include "graphics.h"
@@ -63,12 +63,16 @@ void  __not_in_flash_func(memset32)(uint32_t* dst,const uint32_t data, uint32_t 
 static int dma_chan_ctrl;
 void __not_in_flash_func(dma_handler_VGA)() {
 
+    
     dma_hw->ints0 = 1u << dma_chan_ctrl;   
     static uint32_t frame_i=0;
     static uint32_t line_active=0;
     static uint8_t* vbuf=NULL;
     line_active++;
-    if (line_active==525) {line_active=0;frame_i++;vbuf=v_buf_get_out();}
+    if (line_active==525) {
+        line_active=0;frame_i++;vbuf=v_buf_get_out();
+        
+    }
     switch (line_active)
             {
                 case 480 ... 490:
@@ -85,63 +89,66 @@ void __not_in_flash_func(dma_handler_VGA)() {
 
                          dma_channel_set_read_addr(dma_chan_ctrl,&lines_pattern[0], false);
                        return;
-               
-
 
                 default:
                     // dma_channel_set_read_addr(dma_chan_ctrl,&lines_pattern[6], false);return;
                     break;
             }
 
-   
-
-
     if (!(vbuf)) {dma_channel_set_read_addr(dma_chan_ctrl,&lines_pattern[2], false) ;return;}
+    
     //зона прорисовки изображения
     int line=line_active/2;
-    uint8_t* vbuf8=vbuf+(line)*V_BUF_W/2; 
+    uint8_t* vbuf8 = vbuf+(line)*V_BUF_W/2;
+    uint8_t* vbuf2 = bitmap+(line) * BUF_W/2;
+    //| (*vbuf2 + (line)*V_BUF_W / 2)
+    uint32_t **ptr_vbuf_OUT = &lines_pattern[2];
+    
 
-    uint32_t** ptr_vbuf_OUT=&lines_pattern[2];
-    switch (line_active%4)
+    switch (line_active % 4)
     {
     case 0:
-        ptr_vbuf_OUT=&lines_pattern[2];
+        ptr_vbuf_OUT = &lines_pattern[2];
         break;
     case 1:
          dma_channel_set_read_addr(dma_chan_ctrl,&lines_pattern[2], false) ; return;
     
     case 2:
-        ptr_vbuf_OUT=&lines_pattern[3];
-        break;
+         ptr_vbuf_OUT = &lines_pattern[3];
+         break;
     case 3:
          dma_channel_set_read_addr(dma_chan_ctrl,&lines_pattern[3], false) ; return;
     default:
         break;
     }
 
-     
     uint8_t* vbuf_OUT=(uint8_t*)(*ptr_vbuf_OUT);
   
-    if (is_wide) 
-    for(int i=20;i--;)
-    {
-        *vbuf_OUT++=spec_colors[*vbuf8&0xf];
-        *vbuf_OUT++=spec_colors[*vbuf8>>4];
+    if (is_wide){ 
+        for(int i=20;i--;)
+        {
+            *vbuf_OUT++ = spec_colors[*vbuf8&0xf];
+            *vbuf_OUT++ = spec_colors[*vbuf8>>4];
+        }
     }
 
     for(int i=V_BUF_W/2;i--;)
     {
-             *vbuf_OUT++=spec_colors[*vbuf8&0xf];
-             *vbuf_OUT++=spec_colors[*vbuf8++>>4];
+        *vbuf_OUT++ = spec_colors[*vbuf8 & 0xf];
+        *vbuf_OUT++ = spec_colors[*vbuf8++ >> 4];
     }
     vbuf8--;
-    if (is_wide) 
-    for(int i=20;i--;)
-    {
-        *vbuf_OUT++=spec_colors[*vbuf8&0xf];
-        *vbuf_OUT++=spec_colors[*vbuf8>>4];
+    
+    
+    if (is_wide){
+        for(int i=20;i--;)
+        {
+            *vbuf_OUT++ = spec_colors[*vbuf8&0xf];
+            *vbuf_OUT++ = spec_colors[*vbuf8>>4];
+        }
     }
-        
+    
+
     dma_channel_set_read_addr(dma_chan_ctrl,ptr_vbuf_OUT, false) ;
 
 
@@ -152,7 +159,6 @@ void __not_in_flash_func(dma_handler_VGA)() {
 
 void setVGAWideMode(bool w_mode){is_wide=w_mode;};
 
-
 void startVGA()
 {
     //инициализация палитры 
@@ -162,7 +168,7 @@ void startVGA()
         spec_colors[i]=(c<<0);
     }
 
-    //set_sys_clock_khz(252000, true);
+    set_sys_clock_khz(252000, true);
     
 
     int line_size;
@@ -209,6 +215,10 @@ void startVGA()
     lines_pattern[3]=(uint32_t*)base_ptr;
     memcpy(base_ptr,lines_pattern[0],line_size);
 
+   
+
+
+
     //инициализация PIO
     //загрузка программы в один из PIO
     uint offset = pio_add_program(PIO_VGA, &pio_program_VGA);
@@ -230,6 +240,12 @@ void startVGA()
     pio_sm_init(PIO_VGA, sm, offset, &c);
 
     pio_sm_set_enabled(PIO_VGA, sm, true);
+
+
+   
+   
+
+
 
     // set_sys_clock_khz(256000, true);
     // sleep_ms(10); 

@@ -63,6 +63,7 @@ extern uint8_t pallete8[];
 
 
 
+
 enum p_clk_mode_t{SELF_SYNC_MODE,EXT_SYNC_MODE,Z80_FREQ_MODE};
 enum video_out_mode_t{VGA,HDMI,RGB,COMP};
 enum in_sync_mode_t{S_SYNC,C_SYNC};

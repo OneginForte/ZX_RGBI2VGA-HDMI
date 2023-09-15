@@ -3,9 +3,11 @@
 
 extern "C"
 {
+
 #include "pico/stdlib.h"
 #include "hardware/vreg.h"
 #include "hardware/flash.h"
+
 #include "rgb_capture.h"
 #include "stdio.h"
 #include "v_buf.h"
@@ -18,38 +20,25 @@ extern "C"
 
 cap_set_t capture_setings;
 
-/// @brief 
 static void draw_hello_image()
 {
   uint8_t *vbuf = (uint8_t *)v_buf_get_out();
-  // uint8_t* vbuf1=vbuf+V_BUF_SZ;
-  // uint8_t* vbuf2=vbuf1+V_BUF_SZ;
-
-  for (int y = 0; y < V_BUF_H; y++)
-    for (int x = 0; x < V_BUF_W / 2; x++)
+  
+      // uint8_t* vbuf1=vbuf+V_BUF_SZ;
+      // uint8_t* vbuf2=vbuf1+V_BUF_SZ;
+  uint8_t *vbuf2 = bitmap;
+  for (int y = 0; y < V_BUF_H; y++) for (int x = 0; x < V_BUF_W / 2; x++)
     {
-      uint8_t i = (y / 15) & 0x0f;
-      uint8_t c = ((i & 1) << 3) | (i >> 1);
-      c |= c << 4;
+    uint8_t i = (y / 15) & 0x0f;
+    uint8_t c = ((i & 1) << 3) | (i >> 1);
+    c |= c << 4;
 
-      // uint8_t c=img01[y*(V_BUF_W/2)+x];
-      *vbuf++ = c;
-      // *vbuf1++=c;
-      // *vbuf2++=c;
+    // uint8_t c=img01[y*(V_BUF_W/2)+x];
+    *vbuf++ = c | *vbuf2++;
+    // *vbuf1++=c;
+    // *vbuf2++=c;
     }
 
-/*  uint8_t *vbuf2 = (uint8_t *)v_buf_get_out();
-  uint8_t* ptr = bitmap;
-
-  for (int y = 0; y < (V_BUF_H * V_BUF_W); y++)
-    {
-    if (*ptr != 0){
-      *vbuf2 = *ptr;
-        }
-      *vbuf2++;
-      *ptr++;
-    }
-*/
 }
 
 // int data_for_save[FLASH_PAGE_SIZE/sizeof(int)];
@@ -62,7 +51,7 @@ void setup()
 
   vreg_set_voltage(VREG_VOLTAGE_1_25);
   sleep_ms(100);
-  set_sys_clock_khz(280000, true);
+  set_sys_clock_khz(252000, true);
   sleep_ms(10);
   Serial.begin(115200);
 
@@ -181,17 +170,15 @@ void setup()
     disable_3x_bufmode();
 
   digitalWrite(LED_BUILTIN, LOW); // сбрасываем индикаторный светодиод
-  
-  //init_m();
-  //print_string(60, 8, (char *)"ZX RGB to VGA converter by Alex EKB (C) 2023", col_black, col_white);
+
+  init_m();
+  print_string(1, 0, (char *)"by Alex EKB (C) 2023", col_black, col_white);
 
   draw_hello_image();
 
   if (capture_setings.video_out_mode == VGA)
   {
     startVGA();
-    capture_setings.is_wide_mode = 0;
-    setVGAWideMode(capture_setings.is_wide_mode);
   } // setVGAWideMode(capture_setings.is_wide_mode);
   if (capture_setings.video_out_mode == HDMI)
   {

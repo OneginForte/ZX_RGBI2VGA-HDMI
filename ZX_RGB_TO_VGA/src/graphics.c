@@ -13,7 +13,7 @@
 // 20/02/2022:      Added scroll_up, bitmap now initialised in cvideo.c
 // 02/03/2022:      Added blit
 
-#include <math.h>
+//#include <math.h>
 
 #include "memory.h"
 
@@ -24,12 +24,10 @@
 
 uint8_t *bitmap;
 
-//#define V_BUF_W (320)
-//#define V_BUF_H (320)
-//#define V_BUF_SZ ((V_BUF_H + 1) * V_BUF_W / 2)
+
 
 void init_m(void) {
-    bitmap = malloc(V_BUF_H * V_BUF_W);
+    bitmap = malloc(BUF_SZ);
     cls(0);
 }
 
@@ -37,7 +35,7 @@ void init_m(void) {
 // - c: Background colour to fill screen with
 //
 void cls(unsigned char c) {
-    memset(bitmap, c, V_BUF_H * V_BUF_W);
+    memset(bitmap, c, BUF_SZ);
 }
 
 // Scroll the screen up
@@ -45,8 +43,8 @@ void cls(unsigned char c) {
 // - rows: Number of pixel rows to scroll up by
 //
 void scroll_up(unsigned char c, int rows) {
-    memcpy(bitmap, &bitmap[V_BUF_W * rows], (V_BUF_H - rows) * V_BUF_W);
-    memset(&bitmap[V_BUF_W * (V_BUF_H - rows)], c, rows * V_BUF_W);
+    memcpy(bitmap, &bitmap[BUF_W * rows], (V_BUF_H - rows) * BUF_W);
+    memset(&bitmap[BUF_W * (BUF_H - rows)], c, rows * BUF_W);
 }
 
 // Print a character
@@ -62,13 +60,27 @@ void print_char(int x, int y, int c, unsigned char bc, unsigned char fc) {
 
     if(c >= 32 && c < 128) {
         char_index = (c - 32) * 8;
-        ptr = &bitmap[V_BUF_W * y + x + 7];
+        int x1 = x / 2;
+        ptr = &bitmap[BUF_W * y + x1 + 4];
         for(int row = 0; row < 8; row++) {
             unsigned char data = charset[char_index + row];
-            for(int bit = 0; bit < 8; bit ++) {
-                *(ptr- bit) = data & 1 << bit ? fc : bc;
+            for(int bit = 0; bit < 4; bit ++) {
+                //uint8_t ch = i >> 4;
+                //uint8_t cl = i & 0xf;
+                if (x & 1)
+                {
+                    *(ptr - bit) = *(ptr - bit) | ((data & 1 << bit) ? ((fc & 0xf) << 4) : ((bc & 0xf) << 4));
+                    *(ptr - bit) = *(ptr - bit) | ((data & 1 << (bit+1)) ? (fc & 0xf) : (bc & 0xf));
+                }
+                else 
+                {
+                    //*(ptr - bit) = *(ptr - bit) | (data & 1 << bit) ? (fc & 0xf) : (bc & 0xf);
+                    //*(ptr - bit + 1) = *(ptr - bit) | (data & 1 << bit) ? ((fc & 0xf) << 4) : ((bc & 0xf) << 4);
+                    // packed = ((x & 0xf) << 4) | (y & 0xf)
+                    // uint8_t c = ((i & 1) << 3) | (i >> 1);
+                }
             }
-            ptr += V_BUF_W;
+            ptr += BUF_W/2;
         }
     }
 }
@@ -92,9 +104,9 @@ void print_string(int x, int y, char *s, unsigned char bc, unsigned char fc) {
 // - c: Pixel colour
 //
 void plot(int x, int y, unsigned char c) {
-    if (x >= 0 && x < V_BUF_W && y >= 0 && y < V_BUF_H)
+    if (x >= 0 && x < BUF_W && y >= 0 && y < BUF_H)
     {
-        bitmap[V_BUF_W * y + x] = c;
+        bitmap[BUF_W * y + x] = c;
     }
 }
 
@@ -299,18 +311,18 @@ void draw_horizontal_line(int y1, int x1, int x2, int c) {
         }
         x1 = 0;                         // Clip x1 to 0
     }
-    if (x2 > V_BUF_W)
+    if (x2 > BUF_W)
     {                                   // if x2 > width
-        if (x1 > V_BUF_W)
+        if (x1 > BUF_W)
         {                               // if x1 is also > width
             return;                     // Don't need to draw
         }
-        x2 = V_BUF_W;                   // Clip x2 to width
+        x2 = BUF_W;                   // Clip x2 to width
     }
 //  for(int i = x1; i <= x2; i++) {     // This is slow...
 //      plot(i, y1, c);                 // so we'll use memset to fill the line in memory
 //  }
-    memset(&bitmap[V_BUF_W * y1 + x1], c, x2 - x1 + 1);
+    memset(&bitmap[BUF_W * y1 + x1], c, x2 - x1 + 1);
 }
 
 // Swap two numbers
@@ -389,10 +401,10 @@ void step_line(struct Line *line) {
 //
 void blit(const void * data, int sx, int sy, int sw, int sh, int dx, int dy) {
     void * src = (void *)data + (sw * sy) + sx;
-    void *dst = bitmap + (V_BUF_W * dy) + dx;
+    void *dst = bitmap + (BUF_W * dy) + dx;
     for(int i = 0; i < sh; i++) {
         memcpy(dst, src, sw);
-        dst += V_BUF_W;
+        dst += BUF_W;
         src += sw;
     }
 }

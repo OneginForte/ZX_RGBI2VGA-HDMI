@@ -1,15 +1,8 @@
 #include "g_config.h"
 #include "inttypes.h"
 
-#define V_BUF_SZ ((V_BUF_H+1)*V_BUF_W/2)
-uint8_t g_gbuf[V_BUF_SZ*3];
-
-
-
-
-
-
-
+#define V_BUF_SZ ((V_BUF_H + 1) * V_BUF_W / 2)
+uint8_t g_gbuf[V_BUF_SZ * 3];
 
 #ifdef BOARD_CODE_36LJU22
 uint8_t pallete8[]=

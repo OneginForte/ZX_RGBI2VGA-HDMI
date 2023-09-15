@@ -10,8 +10,16 @@
 // 02/03/2022:      Added blit
 
 #pragma once
+
 #include <stdlib.h>
 #include <stdbool.h>
+
+extern uint8_t *bitmap;
+
+//((BUF_H + 1) * BUF_W / 2)
+#define BUF_W (320)
+#define BUF_H (320)
+#define BUF_SZ ((BUF_H + 1) * BUF_W / 2)
 
 #define rgb(r,g,b) (((b&6)<<5)|(g<<3)|r)
 
@@ -24,8 +32,6 @@
 #define col_yellow  rgb(7, 7, 0)
 #define col_magenta rgb(7, 0, 7)
 #define col_cyan    rgb(0, 7, 7)
-
-extern uint8_t *bitmap;
 
 struct Line {
     int  dx, dy, sx, sy, e, xp, yp, h;
