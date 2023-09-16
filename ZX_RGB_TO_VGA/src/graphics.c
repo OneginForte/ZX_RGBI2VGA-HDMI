@@ -61,7 +61,7 @@ void print_char(int x, int y, int c, unsigned char bc, unsigned char fc) {
     if(c >= 32 && c < 128) {
         char_index = (c - 32) * 8;
         int x1 = x /2 ;
-        ptr = &bitmap[(BUF_W)/2*y + x1 + 3];
+        ptr = &bitmap[(BUF_W/2)*y + x1 + 3];
         for(int row = 0; row < 8; row++) {
             unsigned char data = charset[char_index + row];
             for(int bit = 0; bit < 4; bit ++) {
