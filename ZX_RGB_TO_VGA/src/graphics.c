@@ -60,8 +60,8 @@ void print_char(int x, int y, int c, unsigned char bc, unsigned char fc) {
 
     if(c >= 32 && c < 128) {
         char_index = (c - 32) * 8;
-        int x1 = x / 2;
-        ptr = &bitmap[BUF_W * y + x1 + 4];
+        int x1 = x /2 ;
+        ptr = &bitmap[(BUF_W)/2*y + x1 + 3];
         for(int row = 0; row < 8; row++) {
             unsigned char data = charset[char_index + row];
             for(int bit = 0; bit < 4; bit ++) {
@@ -69,13 +69,17 @@ void print_char(int x, int y, int c, unsigned char bc, unsigned char fc) {
                 //uint8_t cl = i & 0xf;
                 if (x & 1)
                 {
-                    *(ptr - bit) = *(ptr - bit) | ((data & 1 << bit) ? ((fc & 0xf) << 4) : ((bc & 0xf) << 4));
-                    *(ptr - bit) = *(ptr - bit) | ((data & 1 << (bit+1)) ? (fc & 0xf) : (bc & 0xf));
+                    //unsigned char s = *(ptr - bit);
+                    *(ptr - bit) = *(ptr - bit) | (((data >> bit) & 1) ? (fc & 0xf) : (bc & 0xf));
+                    *(ptr - bit) = *(ptr - bit) | (((data >> (bit + 1)) & 1) ? (fc << 4) : (bc << 4));
+                    bit++;
                 }
                 else 
                 {
-                    //*(ptr - bit) = *(ptr - bit) | (data & 1 << bit) ? (fc & 0xf) : (bc & 0xf);
-                    //*(ptr - bit + 1) = *(ptr - bit) | (data & 1 << bit) ? ((fc & 0xf) << 4) : ((bc & 0xf) << 4);
+                    // unsigned char s = *(ptr - bit);
+                    *(ptr - bit) = *(ptr - bit) | (((data >> bit) & 1) ? (fc << 4) : (bc << 4));
+                    *(ptr - bit) = *(ptr - bit) | (((data >> (bit + 1)) & 1) ? (fc & 0xf) : (bc & 0xf));
+                    bit++;
                     // packed = ((x & 0xf) << 4) | (y & 0xf)
                     // uint8_t c = ((i & 1) << 3) | (i >> 1);
                 }

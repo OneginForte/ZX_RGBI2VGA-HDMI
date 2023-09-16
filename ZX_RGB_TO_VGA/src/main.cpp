@@ -172,7 +172,7 @@ void setup()
   digitalWrite(LED_BUILTIN, LOW); // сбрасываем индикаторный светодиод
 
   init_m();
-  print_string(1, 0, (char *)"by Alex EKB (C) 2023", col_black, col_white);
+  print_string(0, 0, (char *)"By Alex EKB (C) 2023", col_black, col_white);
 
   draw_hello_image();
 
